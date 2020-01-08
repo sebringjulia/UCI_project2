@@ -2,11 +2,12 @@
 import pymongo
 import pandas as pd
 
-# Reads in csv files
+# Reads in HAPPINESS DATA csv files
 happiness_data_2015 = pd.read_csv("data/2015.csv")
 happiness_data_2016 = pd.read_csv("data/2016.csv")
 happiness_data_2017 = pd.read_csv("data/2017.csv")
 happiness_data_2018 = pd.read_csv("data/2018.csv")
+
 
 # The default port used by MongoDB is 27017
 # https://docs.mongodb.com/manual/reference/default-mongodb-port/
@@ -97,3 +98,20 @@ for i in range(happiness_data_2018.shape[0]):
     }
     happiness_2018.insert_one(post)
 
+# Adding in Latitude and Longitude Country Data
+lat_long_data = pd.read_csv("data/countries.csv")
+
+db.location.drop()
+# Declare the collection
+location_data = db.location_data
+
+for i in range(lat_long_data.shape[0]):
+    post = {
+        "Country ID": int(lat_long_data["country_id"][i]),
+        "Country": lat_long_data["country"][i],
+        "Country Code": lat_long_data["code"][i],
+        "Coordinates": [lat_long_data["Latitude"],lat_long_data["Longitude"]],
+        "Latitude": lat_long_data["Latitude"],
+        "Longitude":lat_long_data["Longitude"]
+    }
+    location_data.insert_one(post)
