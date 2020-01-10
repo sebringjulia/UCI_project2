@@ -99,19 +99,73 @@ for i in range(happiness_data_2018.shape[0]):
     happiness_2018.insert_one(post)
 
 # Adding in Latitude and Longitude Country Data
-lat_long_data = pd.read_csv("data/countries.csv")
+geo_data = pd.read_csv("data/countries.csv")
 
 db.location.drop()
 # Declare the collection
-location_data = db.location_data
+# location_data = db.location_data
 
-for i in range(lat_long_data.shape[0]):
-    post = {
-        "Country ID": int(lat_long_data["country_id"][i]),
-        "Country": lat_long_data["country"][i],
-        "Country Code": lat_long_data["code"][i],
-        "Coordinates": [lat_long_data["Latitude"],lat_long_data["Longitude"]],
-        "Latitude": lat_long_data["Latitude"],
-        "Longitude":lat_long_data["Longitude"]
-    }
-    location_data.insert_one(post)
+# for i in range(geo_data.shape[0]):
+#     post = {
+#         "Country": geo_data["country"][i],
+#         "Country Code": geo_data["code"][i],
+#         "Coordinates": [geo_data["Latitude"],geo_data["Longitude"]],
+#         "Latitude": geo_data["Latitude"],
+#         "Longitude":geo_data["Longitude"]
+#     }
+#     location_data.insert_one(post)
+
+#JULIA
+
+happiness_data_2015["Year"] = '2015'
+happiness_data_2016["Year"] = '2016'
+happiness_data_2017["Year"] = '2017'
+happiness_data_2018["Year"] = '2018'
+#Renaming 2017 columns
+happiness_data_2017= happiness_data_2017.rename(columns={"Happiness.Rank": "Happiness Rank", 
+                                    "Happiness.Score": "Happiness Score",
+                                   "Economy..GDP.per.Capita.": "Economy (GDP per Capita)",
+                                    "Health..Life.Expectancy.": "Health (Life Expectancy)",
+                                    "Trust..Government.Corruption.":"Trust (Government Corruption)",
+                                    "Dystopia.Residual": "Dystopia Residual"
+                                   })
+# happiness_data_2017.columns
+
+#Renaming 2018 columns
+happiness_data_2018= happiness_data_2018.rename(columns={"Overall rank": "Happiness Rank",
+                                                         "Country or region":"Country",
+                                    "Score": "Happiness Score",
+                                   "GDP per capita": "Economy (GDP per Capita)",
+                                    "Healthy life expectancy": "Health (Life Expectancy)",
+                                    "Perceptions of corruption":"Trust (Government Corruption)",
+                                    "Dystopia.Residual": "Dystopia Residual",
+                                                         "Freedom to make life choices": "Freedom",
+                                                         "Social support":"Family"
+                                   })
+# happiness_data_2018.columns
+
+db.country_coord.drop()
+# Declare the collection
+country_coord = db.country_coord
+
+clean_geo = geo_data.drop(columns=['Unnamed: 0', 'country_id', 'code'])
+clean_geo.head()
+
+# Dataframes to load to database
+merged_2018 = pd.merge(happiness_data_2018, clean_geo, left_on='Country', right_on='country', how='inner')
+merged_2017 = pd.merge(happiness_data_2017, clean_geo, left_on='Country', right_on='country', how='inner')
+merged_2016 = pd.merge(happiness_data_2016, clean_geo, left_on='Country', right_on='country', how='inner')
+merged_2015 = pd.merge(happiness_data_2015, clean_geo, left_on='Country', right_on='country', how='inner')
+
+# Combined all dataframes to verify that columns match up
+merged_complete = merged_2015.append(merged_2016, ignore_index=True, sort=False)
+# merged_complete.head()
+
+merged_complete = merged_complete.append(merged_2017, ignore_index=True, sort=False)
+merged_complete = merged_complete.append(merged_2018, ignore_index=True, sort=False)
+
+
+merged_complete = merged_complete.sort_values(['Country','Year'])
+
+# Remove columns: country, Region, Standard Error, Lower Confidence Interval, Upper Confidence Interval, Whisker.high, Whisker.low
+cleaned_merged_complete = merged_complete.drop(columns=['Dystopia Residual','country', 'Region', 'Standard Error', 'Lower Confidence Interval', 'Upper Confidence Interval', 'Whisker.high', 'Whisker.low'])
