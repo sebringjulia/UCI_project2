@@ -111,8 +111,8 @@ for i in range(geo_data.shape[0]):
         "Country": geo_data["country"][i],
         "Country Code": geo_data["code"][i],
         "Coordinates": [geo_data["Latitude"][i],geo_data["Longitude"][i]],
-        "Latitude": round(geo_data["Latitude"][i]),
-        "Longitude":round(geo_data["Longitude"][i])
+        "Latitude": geo_data["Latitude"][i],
+        "Longitude":geo_data["Longitude"][i]
     }
     geo_data.dtypes
     location_data.insert_one(post)
@@ -172,4 +172,21 @@ merged_complete = merged_complete.sort_values(['Country','Year'])
 # Remove columns: country, Region, Standard Error, Lower Confidence Interval, Upper Confidence Interval, Whisker.high, Whisker.low
 cleaned_merged_complete = merged_complete.drop(columns=['Dystopia Residual','country', 'Region', 'Standard Error', 'Lower Confidence Interval', 'Upper Confidence Interval', 'Whisker.high', 'Whisker.low'])
 
-# print(cleaned_merged_complete.head())
+#print(cleaned_merged_complete.head())
+
+for i in range(cleaned_merged_complete.shape[0]):
+    post = {
+        "Country": cleaned_merged_complete["Country"][i],
+        "Happiness Rank": int(cleaned_merged_complete["Happiness Rank"][i]),
+        "Happiness Score": cleaned_merged_complete["Happiness Score"][i],
+        "Economy (GDP per Capita)": cleaned_merged_complete["Economy (GDP per Capita)"][i], 
+        "Family": cleaned_merged_complete["Family"][i], 
+        "Health (Life Expectancy)": cleaned_merged_complete["Health (Life Expectancy)"][i],
+        "Freedom": cleaned_merged_complete["Freedom"][i],
+        "Trust (Government Corruption)": cleaned_merged_complete["Trust (Government Corruption)"][i], 
+        "Generosity": cleaned_merged_complete["Generosity"][i],
+        "Year": cleaned_merged_complete["Year"][i],
+        "Latitude": cleaned_merged_complete["Latitude"][i],
+        "Longitude": cleaned_merged_complete["Longitude"][i]
+    }
+    country_coord.insert_one(post)
