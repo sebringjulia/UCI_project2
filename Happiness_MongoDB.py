@@ -101,19 +101,20 @@ for i in range(happiness_data_2018.shape[0]):
 # Adding in Latitude and Longitude Country Data
 geo_data = pd.read_csv("data/countries.csv")
 
-db.location.drop()
+db.country_coord.drop()
 # Declare the collection
-# location_data = db.location_data
+country_coord = db.country_coord
 
-# for i in range(geo_data.shape[0]):
-#     post = {
-#         "Country": geo_data["country"][i],
-#         "Country Code": geo_data["code"][i],
-#         "Coordinates": [geo_data["Latitude"],geo_data["Longitude"]],
-#         "Latitude": geo_data["Latitude"],
-#         "Longitude":geo_data["Longitude"]
-#     }
-#     location_data.insert_one(post)
+for i in range(geo_data.shape[0]):
+    post = {
+        "Country": geo_data["country"][i],
+        "Country Code": geo_data["code"][i],
+        "Coordinates": [geo_data["Latitude"][i],geo_data["Longitude"][i]],
+        "Latitude": round(geo_data["Latitude"][i]),
+        "Longitude":round(geo_data["Longitude"][i])
+    }
+    geo_data.dtypes
+    country_coord.insert_one(post)
 
 #JULIA
 
@@ -169,3 +170,5 @@ merged_complete = merged_complete.sort_values(['Country','Year'])
 
 # Remove columns: country, Region, Standard Error, Lower Confidence Interval, Upper Confidence Interval, Whisker.high, Whisker.low
 cleaned_merged_complete = merged_complete.drop(columns=['Dystopia Residual','country', 'Region', 'Standard Error', 'Lower Confidence Interval', 'Upper Confidence Interval', 'Whisker.high', 'Whisker.low'])
+
+# print(cleaned_merged_complete.head())
