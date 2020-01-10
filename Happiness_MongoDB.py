@@ -102,8 +102,9 @@ for i in range(happiness_data_2018.shape[0]):
 geo_data = pd.read_csv("data/countries.csv")
 
 db.country_coord.drop()
+db.location_data.drop()
 # Declare the collection
-country_coord = db.country_coord
+location_data = db.country_coord
 
 for i in range(geo_data.shape[0]):
     post = {
@@ -114,7 +115,7 @@ for i in range(geo_data.shape[0]):
         "Longitude":round(geo_data["Longitude"][i])
     }
     geo_data.dtypes
-    country_coord.insert_one(post)
+    location_data.insert_one(post)
 
 #JULIA
 
