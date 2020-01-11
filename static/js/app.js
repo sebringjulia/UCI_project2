@@ -1,8 +1,8 @@
 // define source data
 // var countries = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson";
-var countries =  "geojson/countries.geo.json";
-var geojson = "geojson/simplestyles.geojson";
-var topojson = "topojson/us-states.topo.json";
+var countries =  "../../geojson/countries.geo.json";
+// var geojson = "/geojson/simplestyles.geojson";
+// var topojson = "/topojson/us-states.topo.json";
 
 // create the cesium container
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjA1MzYwYi1iMDhjLTQwNzQtOTI3Yi0wYWNjNjhjNjUyYWIiLCJpZCI6MjAxMzMsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NzY4MTY5OTN9.iMx-a5aN6VEYfdlN8cfPbJEq6nB-16q1qnRELDpbsOE';
