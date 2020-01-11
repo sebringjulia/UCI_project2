@@ -1,72 +1,113 @@
-var newYorkCoords = [40.73, -74.0059];
-var mapZoomLevel = 12;
-var url = "https://gbfs.citibikenyc.com/gbfs/en/station_information.json";
+// define source data
+// var countries = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson";
+var countries =  "geojson/countries.geo.json";
+var geojson = "geojson/simplestyles.geojson";
+var topojson = "topojson/us-states.topo.json";
 
-// Create the createMap function
-function  createMap(bikeStations) {
+// create the cesium container
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjA1MzYwYi1iMDhjLTQwNzQtOTI3Yi0wYWNjNjhjNjUyYWIiLCJpZCI6MjAxMzMsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NzY4MTY5OTN9.iMx-a5aN6VEYfdlN8cfPbJEq6nB-16q1qnRELDpbsOE';
 
-  // Create the tile layer that will be the background of our map
-var lightmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    maxZoom: 18,
-    id: "mapbox.light",
-    accessToken: API_KEY
-  });
+var viewer = new Cesium.Viewer('cesiumContainer', {
 
-var streets = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    maxZoom: 18,
-    id: "mapbox.streets",
-    accessToken: API_KEY
-  });
+});
 
-  // Create a baseMaps object to hold the lightmap layer
-    var baseMaps = {
-        "Light Map": lightmap,
-        "Streets": streets
-    };
+// load country boundaries
+// var dataSource = Cesium.GeoJsonDataSource.load(countries);
 
-  // Create an overlayMaps object to hold the bikeStations layer
-    var overlayMaps = {
-        "Bike Stations": bikeStations
-    };
+// simple load
+// viewer.dataSources.add(Cesium.GeoJsonDataSource.load(topojson, {
+//     stroke: Cesium.Color.HOTPINK,
+//     fill: Cesium.Color.PINK.withAlpha(0.5),
+//     strokeWidth: 5
+// }));
 
-  // Create the map object with options
-    var map = L.map("map-id", {
-        center: newYorkCoords,
-        zoom: mapZoomLevel,
-        layers: [lightmap, bikeStations]
+// custom style
+// Seed the random number generator for repeatable results.
+// Sandcastle.addToolbarButton('Custom styling', function() {
+    Cesium.Math.setRandomNumberSeed(0);
+
+    // Create a new GeoJSON data source and add it to the list.
+    var dataSource = new Cesium.GeoJsonDataSource();
+    viewer.dataSources.add(dataSource);
+
+    // console.log(viewer.dataSources);
+    // console.log(dataSource);
+
+    // Load the document into the data source and then set custom graphics
+    dataSource.load(topojson).then(function() {
+        //Get the array of entities
+        var entities = dataSource.entities.values;
+
+        var colorHash = {};
+        // for (var i = 0; i < 1; i++) { // replace with entities.length to go though all entities
+        for (var i = 0; i < entities.length; i++) { // replace with entities.length to go though all entities
+            //For each entity, create a random color based on the state name.
+            //Some states have multiple entities, so we store the color in a
+            //hash so that we use the same color for the entire state.
+            var entity = entities[i];
+            var name = entity.name;
+            var color = colorHash[name];
+
+            if (!color) {
+                color = Cesium.Color.fromRandom({
+                    alpha : 1
+                });
+                colorHash[name] = color;
+            }
+            // console.log(colorHash);
+
+            // console.log(entity.polygon.material.color);
+            
+            // Set the polygon material to our random color.
+            // entity.polygon.material = Cesium.ColorMaterialProperty.fromColor(color);
+            // entity.polygon.material.color = color;
+
+            //Set the polygon material to our random color.
+            entity.polygon.fill = true;
+            entity.polygon.material = color;
+
+            //Remove the outlines.
+            // entity.polygon.outline = false;
+
+            //Extrude the polygon based on the state's population.  Each entity
+            //stores the properties for the GeoJSON feature it was created from
+            //Since the population is a huge number, we divide by 50.
+            // entity.polygon.extrudedHeight = 25;
+            // entity.polygon.extrudedHeight = entity.properties.Population / 50.0;
+
+            // learning by messing with california or USA
+            // if (name == "California") {
+            if (name == "United States of America") {
+                entity.polygon.extrudedHeight = 1000000;
+                entity.polygon.fill = true;
+                console.log("---------");
+                console.log(entity);
+                console.log(name);
+                console.log("---------");
+            }
+
+            // Print some info for debugging
+            if (i === entities.length-1) {
+                console.log("---------");
+                console.log(`last entity @ i = ${i}`);
+                console.log(entity);
+                console.log(name);
+                console.log("---------");
+                console.log(colorHash);
+            }
+        }
+    }).otherwise(function(error){
+        //Display any errors encountered while loading.
+        window.alert(error);
     });
+// });
 
-  // Create a layer control, pass in the baseMaps and overlayMaps. Add the layer control to the map
-    L.control.layers(baseMaps, overlayMaps, {
-        collapsed: false
-    }).addTo(map);
-};
 
-// Create the createMarkers function
-function createMarkers(response) {
-
-    // Pull the "stations" property off of response.data
-    var stations = response.data.stations;
-
-    // Initialize an array to hold bike markers
-    var bikeMarkers = [];
-
-  // Loop through the stations array
-    for (var index = 0; index < stations.length; index++) {
-        var station = stations[index];
-
-        // For each station, create a marker and bind a popup with the station's name
-        var bikeMarker = L.marker([station.lat, station.lon])
-            .bindPopup("<h3>" + station.name + "<h3><h3>Capacity: "+ station.capacity + "<h3>");
-
-        // Add the marker to the bikeMarkers array
-        bikeMarkers.push(bikeMarker);
-    }
-  // Create a layer group made from the bike markers array, pass it into the createMap function
-    createMap(L.layerGroup(bikeMarkers));
-}
-
-// Perform an API call to the Citi Bike API to get station information. Call createMarkers when complete
-d3.json(url, createMarkers);
+//Reset the scene when switching demos.
+// Sandcastle.reset = function() {
+//   viewer.dataSources.removeAll();
+//
+//   //Set the camera to a US centered tilted view.
+//   viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(-98, 15.0, 5000000),
+//       Cesium.Cartesian3.fromDegrees(-98, 40.0, 0), Cesium.Cartesian3.UNIT_Z);
+// };
