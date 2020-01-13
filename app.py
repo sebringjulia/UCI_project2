@@ -10,26 +10,57 @@ mongo = PyMongo(app)
 # Or set inline
 # mongo = PyMongo(app, uri="mongodb://localhost:27017/mars_app")
 # Collection
-country_coord = mongo.db.country_coord.find()
 
-
-for country in country_coord:
-    country_coord = country
-
-# for country in country_coord.find():
-#     country_coord = country
-
-country_coord['_id'] = str(country_coord['_id'])
 
 @app.route("/")
 def index():
-     country_coord = list(mongo.db.country_coord.find())
-     print(country_coord)
-     return render_template("index.html", country_coord = country_coord)
+     return render_template("index.html")
 
-@app.route("/scrape")
-def scrape():
-    return country_coord
+
+@app.route("/Year")
+def years():
+    countries = list(mongo.db.country_coord.find({},{"_id":0}))
+    Years = []
+    for i in countries:
+        if i['Year'] not in Years: 
+            Years.append(i['Year'])
+    return jsonify(Years)
+
+@app.route("/Filter/<year>/<country>")
+def filter(year,country):
+    if year == '2015':
+        year_filtered_data = list(mongo.db.happiness_2015.find({},{"_id":0}))
+    elif year == '2016':
+        year_filtered_data = list(mongo.db.happiness_2016.find({},{"_id":0}))
+    elif year == '2017':
+        year_filtered_data = list(mongo.db.happiness_2017.find({},{"_id":0}))
+    elif year == '2018':
+        year_filtered_data = list(mongo.db.happiness_2018.find({},{"_id":0}))
+    else:
+        year_filtered_data = list(mongo.db.country_coord.find({},{"_id":0}))
+    
+    if country == "All": 
+        print(year_filtered_data)
+        return jsonify(year_filtered_data)
+    else: 
+        filtered_data = []
+        for i in year_filtered_data:
+            if i['Country'] == country:
+                filtered_data.append(i)
+        print(filtered_data)
+        return jsonify(filtered_data)
+
+@app.route("/countryNames")
+def country_names():
+    countries = list(mongo.db.country_coord.find())
+    names = []
+    for i in countries:
+        if i['Country'] not in names: 
+            names.append(i['Country'])
+
+    names = sorted(names)
+    print(names)
+    return jsonify(names)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug = True)
