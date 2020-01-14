@@ -1,40 +1,34 @@
 function drawTable(data) {
 	
 	let code = data.Code,
-		country = data.Country,
-		dystopida = roundNumber(data.DystopiaResidual),
-		economy = roundNumber(data.Economy_GDPperCapita),
-		family = roundNumber(data.Family),
-		freedom = roundNumber(data.Freedom),
-		generosity = roundNumber(data.Generosity),
-		rank = roundNumber(data.HappinessRank),
-		score = roundNumber(data.HappinessScore),
-		health = roundNumber(data.Health_LifeExpectancy),
-		trust = roundNumber(data.Trust_GovernmentCorruption);
+		country = data[0]['Country'],
+		economy = Math.round(data[0]['Economy (GDP per Capita)']*100)/100,
+		family = Math.round(data[0]["Family"]*100)/100,
+		freedom = Math.round(data[0]["Freedom"]*100)/100,
+		generosity = Math.round(data[0]["Generosity"]*100)/100,
+		rank = Math.round(data[0]["Happiness Rank"]*100)/100,
+		score = Math.round(data[0]["Happiness Score"]*100)/100,
+		health = Math.round(data[0]["Health (Life Expectancy)"]*100)/100,
+		trust = Math.round(data[0]["Trust (Government Corruption)"]*100)/100,
+		year = data[0]['Year'];
+
 
 	var values = [
     	['Happiness Score','Happiness Rank', 
     	'Economy (GDP per Capita)','Family',
     	'Health (Life Expectancy)','Freedom',
-    	'Trust (Government Corruption)','Generosity','Dystopia Residual'],
-		[score,rank,economy,family,health,freedom,trust,generosity,dystopida],
+    	'Trust (Government Corruption)','Generosity'],
+		[score,rank,economy,family,health,freedom,trust,generosity],
 		['A metric measured by asking the sampled people the question:\
 		"How would you rate your happiness on a scale of 0 to 10 where 10 is the happiest."',
 		'Rank of the country based on the Happiness Score.',
-		'The extent to which GDP contributes to\
-		 the calculation of the Happiness Score.',
-		'The extent to which Family contributes\
-		 to the calculation of the Happiness Score',
-		'The extent to which Life expectancy \
-		contributed to the calculation of the Happiness Score',
-		'The extent to which Freedom contributed\
-		 to the calculation of the Happiness Score.',
-		'The extent to which Perception of Corruption\
-		 contributes to Happiness Score.',
-		'The extent to which Generosity contributed to\
-		 the calculation of the Happiness Score.',
-		'The extent to which Dystopia Residual contributed to\
-		 the calculation of the Happiness Score.']
+		'The extent to which GDP contributes to the calculation of the Happiness Score.',
+		'The extent to which Family contributed to the calculation of the Happiness Score',
+		'The extent to which Life expectancy contributed to the calculation of the Happiness Score',
+		'The extent to which Freedom contributed to the calculation of the Happiness Score.',
+		'The extent to which Perception of Corruption contributes to Happiness Score.',
+		'The extent to which Generosity contributed to the calculation of the Happiness Score.'
+		]
 	]
 
 	var data = [{

@@ -1,7 +1,10 @@
 // Guage for Project 2 by Mikayla
 
-function buildGauge(wfreq) {
-    var level = parseFloat(wfreq) * 20;
+function drawGauge(data) {
+
+    var level = parseFloat(data[0]['Happiness Score']) * 20;
+    var year = data[0]['Year'];
+    var country = data[0]['Country'];
     var degrees = 180 - level;
     var radius = 0.7;
     var radians = (degrees * Math.PI) / 180;
@@ -22,14 +25,14 @@ function buildGauge(wfreq) {
         y: [0],
         marker: { size: 10, color: "850000" },
         showlegend: false,
-        name: "Freq",
-        text: level,
-        hoverinfo: "text+name"
+        name: "Happiness Score",
+        text: Math.round(data[0]['Happiness Score']*100)/100,
+        hoverinfo: "text"
       },
       {
         values: [50 / 5, 50 / 5, 50 / 5, 50 / 5, 50 / 5, 50],
         rotation: 90,
-        text: ["8-10", "8-6", "4-6","2-4", "0-2", ""],
+        text: ["8-10", "6-8", "4-6","2-4", "0-2", ""],
         textinfo: "text",
         textposition: "inside",
         marker: {
@@ -61,9 +64,9 @@ function buildGauge(wfreq) {
           }
         }
       ],
-      title: "<b>Happiness</b> <br></b>Scale</b>",
-      height: 600,
-      width: 600,
+      title: `<b>HAPPINESS SCALE</b><br>${country}<br>${year}`,
+      height: 500,
+      width: 500,
       xaxis: {
         zeroline: false,
         showticklabels: false,

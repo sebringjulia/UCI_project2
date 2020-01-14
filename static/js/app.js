@@ -152,13 +152,12 @@ function init() {
 }
 
 function buildVisuals(year,country) {
-    d3.json(`/Filter/${year}/${country}`).then((data)=> {
+    console.log(`/Filter/${year}/${country}`)
+    d3.json(`/Filter/${year}/${country}`).then((data) => {
+        console.log(data)
         drawScatter(data)
         drawTable(data)
-    // =================================================================
-    // Place functions for visuals
-    //  Make sure you path your visual in the index.html
-	// =================================================================
+        drawGauge(data)
     })
 }
 
@@ -173,6 +172,5 @@ function optionChanged(new_value,category) {
     }
     buildVisuals(year,country);
 }
-
 
 init();

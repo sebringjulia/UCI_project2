@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify
 from flask_pymongo import PyMongo
+import json
 
 
 app = Flask(__name__)
@@ -28,6 +29,7 @@ def years():
 
 @app.route("/Filter/<year>/<country>")
 def filter(year,country):
+    print(year,country)
     if year == '2015':
         year_filtered_data = list(mongo.db.happiness_2015.find({},{"_id":0}))
     elif year == '2016':
@@ -36,7 +38,9 @@ def filter(year,country):
         year_filtered_data = list(mongo.db.happiness_2017.find({},{"_id":0}))
     elif year == '2018':
         year_filtered_data = list(mongo.db.happiness_2018.find({},{"_id":0}))
-    else:
+    elif year == "All":
+        year_filtered_data = list(mongo.db.country_coord.find({},{"_id":0}))
+    else: 
         year_filtered_data = list(mongo.db.country_coord.find({},{"_id":0}))
     
     if country == "All": 
@@ -59,7 +63,7 @@ def country_names():
             names.append(i['Country'])
 
     names = sorted(names)
-    print(names)
+    #print(names)
     return jsonify(names)
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-function drawScatter(data){
+function drawScatter(data,year,country){
 	var svgWidth =1000,
 	svgHeight =650;
 
@@ -13,6 +13,7 @@ function drawScatter(data){
 		height = svgHeight - margin.t - margin.b;
 
 	var svg = d3.select('#scatter')
+		.html("")
 		.classed('chart',true)
 		.append('svg')
 		.attr('width', svgWidth)
@@ -57,12 +58,10 @@ function drawScatter(data){
 	chartGroup.append("text")
 	    .attr("transform", `translate(${width - 30},${height - 5})`)
 	    .attr("class", "axis-text-main")
-	    .text(`${year}`)
 
 	chartGroup.append("text")
 	    .attr("transform", `translate(15,20)rotate(270)`)
 	    .attr("class", "axis-text-main")
-	    .text(`${year}`)
 
 
 	var countryCircles = chartGroup.selectAll('circle')
@@ -358,8 +357,8 @@ function updateToolTip(chosenYAxis,chosenXAxis,countryCircles,countryText) {
         .attr('class','d3-tip')
         .offset([85, -65])
         .html( d => {
-	        return (`${d.Country}<br>${chosenYAxis}:${d[chosenYAxis]}
-        		<br>${chosenXAxis}:${d[chosenXAxis]}`)
+	        return (`${d['Year']}<br>${d.Country}<br> ${chosenYAxis}:  ${Math.round(d[chosenYAxis]*100)/100}
+        		<br>${chosenXAxis}:  ${Math.round(d[chosenXAxis]*100)/100}`)
 	        });
         
 
